@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Polished Quiz App</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #74ebd5 0%, #ACB6E5 100%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    #quiz-box {
+      background: white;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      width: 350px;
+      text-align: center;
+    }
+    h2 {
+      color: #333;
+    }
+    .option {
+      background: #f1f1f1;
+      padding: 12px;
+      margin: 10px 0;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    .option:hover {
+      background: #ddd;
+    }
+    .correct {
+      background-color: #a8e6cf !important;
+    }
+    .wrong {
+      background-color: #ff8b94 !important;
+    }
+    #feedback {
+      margin-top: 15px;
+      font-size: 16px;
+      font-weight: bold;
+    }
+    #score {
+      margin-top: 20px;
+      font-size: 20px;
+      color: #333;
+    }
+    #next-btn, #restart-btn {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      margin-top: 15px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    #next-btn:hover, #restart-btn:hover {
+      background-color: #45a049;
+    }
+  </style>
+</head>
+<body>
+
+<div id="quiz-box">
+  <h2 id="question">Question Text</h2>
+  <div id="options"></div>
+  <div id="feedback"></div>
+  <button id="next-btn" style="display:none;">Next</button>
+  <div id="score"></div>
+  <button id="restart-btn" style="display:none;">Play Again</button>
+</div>
+
+<script>
+  const quizData = [
+    {
+      question: "What is the largest planet in our Solar System?",
+      options: ["Earth", "Saturn", "Jupiter", "Mars"],
+      answer: "Jupiter"
+    },
+    {
+      question: "What language is used for styling web pages?",
+      options: ["HTML", "CSS", "Python", "Java"],
+      answer: "CSS"
+    },
+    {
+      question: "Who wrote 'Romeo and Juliet'?",
+      options: ["Charles Dickens", "William Shakespeare", "J.K. Rowling", "Mark Twain"],
+      answer: "William Shakespeare"
+    },
+    {
+        question: "what is your Goal ?",
+        options: [ "Software engineer","Web developer","App developer","none of this"],
+        answer: "Web developer"
+    }
+  ];
+
+  let currentQuestion = 0;
+  let score = 0;
+
+  const questionEl = document.getElementById('question');
+  const optionsEl = document.getElementById('options');
+  const feedbackEl = document.getElementById('feedback');
+  const nextBtn = document.getElementById('next-btn');
+  const scoreEl = document.getElementById('score');
+  const restartBtn = document.getElementById('restart-btn');
+
+  function loadQuestion() {
+    const q = quizData[currentQuestion];
+    questionEl.textContent = q.question;
+    optionsEl.innerHTML = '';
+    feedbackEl.textContent = '';
+    nextBtn.style.display = 'none';
+
+    q.options.forEach(option => {
+      const div = document.createElement('div');
+      div.classList.add('option');
+      div.textContent = option;
+      div.onclick = () => selectOption(div, option);
+      optionsEl.appendChild(div);
+    });
+  }
+
+  function selectOption(element, selected) {
+    const correct = quizData[currentQuestion].answer;
+    const optionDivs = document.querySelectorAll('.option');
+    optionDivs.forEach(opt => opt.onclick = null); // disable all options
+
+    if (selected === correct) {
+      element.classList.add('correct');
+      feedbackEl.textContent = "Correct! 🎉";
+      score++;
+    } else {
+      element.classList.add('wrong');
+      feedbackEl.textContent = `Wrong! Correct Answer: ${correct}`;
+      optionDivs.forEach(opt => {
+        if (opt.textContent === correct) opt.classList.add('correct');
+      });
+    }
+    nextBtn.style.display = 'inline-block';
+  }
+
+  nextBtn.onclick = () => {
+    currentQuestion++;
+    if(currentQuestion < quizData.length){
+      loadQuestion();
+    } else {
+      showScore();
+    }
+  };
+
+  restartBtn.onclick = () => {
+    currentQuestion = 0;
+    score = 0;
+    scoreEl.textContent = '';
+    restartBtn.style.display = 'none';
+    loadQuestion();
+  };
+
+  function showScore() {
+    questionEl.textContent = "Quiz Finished!";
+    optionsEl.innerHTML = '';
+    feedbackEl.textContent = '';
+    nextBtn.style.display = 'none';
+    scoreEl.textContent = `Your Score: ${score} / ${quizData.length}`;
+    restartBtn.style.display = 'inline-block';
+  }
+
+  loadQuestion();
+</script>
+
+</body>
+</html>
